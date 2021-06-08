@@ -12,8 +12,8 @@ outdated:
 test: install
 	# NOTE: kaocha does not support Clojure 1.8
 	clojure -M:outdated:nop:1.8 --exclude=clojure/brew-install
-	clojure -M:dev:1.9:test
-	clojure -M:dev:test
+	clojure -M:1.9:test
+	clojure -M:test
 	script/integration_test.sh
 
 .PHONY: lint
@@ -55,7 +55,7 @@ docker-test:
 
 .PHONY: coverage
 coverage:
-	clojure -M:coverage:dev:nop --src-ns-path=src --test-ns-path=test --codecov
+	clojure -M:test:coverage:nop --src-ns-path=src --test-ns-path=test --codecov
 
 .PHONY: clean
 clean:

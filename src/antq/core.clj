@@ -1,13 +1,8 @@
-;; Warn on Clojure 1.7.0 or earlier
-(let [{:keys [major minor]} *clojure-version*]
-  (when-not (or (and (= major 1) (>= minor 8))
-                (> major 1))
-    (.println ^java.io.PrintWriter *err* "antq requires Clojure 1.8.0 or later.")
-    (System/exit 1)))
-
 (ns antq.core
   (:gen-class)
   (:require
+   [antq.changelog :as changelog]
+   [antq.changelog.java]
    [antq.dep.babashka :as dep.bb]
    [antq.dep.boot :as dep.boot]
    [antq.dep.clojure :as dep.clj]
@@ -18,7 +13,6 @@
    [antq.diff :as diff]
    [antq.diff.git-sha]
    [antq.diff.github-tag]
-   [antq.diff.java]
    [antq.log :as log]
    [antq.record :as r]
    [antq.report :as report]
@@ -39,6 +33,15 @@
    [clojure.string :as str]
    [clojure.tools.cli :as cli]
    [version-clj.core :as version]))
+
+;; Warn on Clojure 1.7.0 or earlier
+(let [{:keys [major minor]} *clojure-version*]
+  (when-not (or (and (= major 1) (>= minor 8))
+                (> major 1))
+    (.println ^java.io.PrintWriter *err* "antq requires Clojure 1.8.0 or later.")
+    (System/exit 1)))
+
+(require 'antq.diff.java) ; for multimethods (prevents clj-kondo warning)
 
 (defn- concat-assoc-fn
   [opt k v]
@@ -173,6 +176,12 @@
     (assoc version-checked-dep :diff-url url)
     version-checked-dep))
 
+(defn assoc-changelog-url
+  [version-checked-dep]
+  (if-let [url (changelog/get-changelog-url version-checked-dep)]
+    (assoc version-checked-dep :changelog-url url)
+    version-checked-dep))
+
 (defn unverified-deps
   [deps]
   (keep #(when-let [verified-name (and (= :java (:type %))
@@ -227,6 +236,7 @@
                   (unify-deps-having-only-newest-version-flag))
         outdated (->> (outdated-deps deps options)
                       (map assoc-diff-url)
+                      (map assoc-changelog-url)
                       (concat (unverified-deps deps)))]
     (report/reporter outdated options)
     outdated))

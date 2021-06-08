@@ -33,13 +33,19 @@
          (pprint/print-table [:file :name :current :latest]))
     (println "All dependencies are up-to-date."))
 
-  ;; Show diff URLs
-  (let [urls (->> deps
-                  (filter :latest-version)
-                  (sort u.dep/compare-deps)
-                  (keep :diff-url)
-                  (distinct))]
-    (when (seq urls)
-      (println "\nAvailable diffs:")
-      (doseq [u urls]
-        (println "-" u)))))
+  ;; Show diff URLs, changelogs, in a grouped-by-dep fashion
+  (let [corpus (->> deps
+                    (filter :latest-version)
+                    (sort u.dep/compare-deps)
+                    (filter (some-fn :diff-url :changelog-url))
+                    (group-by (juxt :type :name :version))
+                    (vals))]
+    (when (seq corpus)
+      (println "\nAvailable update information:")
+      (doseq [group corpus
+              :let [urls (->> group (keep :diff-url) (distinct))
+                    changelogs (->> group (keep :changelog-url) (distinct))]]
+        (doseq [c changelogs]
+          (println "-" c))
+        (doseq [u urls]
+          (println "-" u))))))

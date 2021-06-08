@@ -21,6 +21,8 @@
    project
    ;; Diff URL for Version Control System (Nullable)
    diff-url
+   ;; Changelog URL for Version Control System (Nullable)
+   changelog
    ;; Latest dependency name (Nullable)
    ;; c.f. https://github.com/clojars/clojars-web/wiki/Verified-Group-Names
    latest-name

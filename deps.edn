@@ -16,12 +16,6 @@
   :1.9
   {:override-deps {org.clojure/clojure {:mvn/version "1.9.0"}}}
 
-  :dev
-  {:extra-paths ["test"
-                 "test/resources"]
-   :extra-deps {lambdaisland/kaocha {:mvn/version "1.0.861"}
-                lambdaisland/deep-diff2 {:mvn/version "2.0.108"}}}
-
   :nop
   {:extra-deps {org.slf4j/slf4j-nop {:mvn/version "RELEASE"}}}
 
@@ -29,7 +23,10 @@
   {:main-opts ["-m" "antq.core"]}
 
   :test
-  {:main-opts ["-m" "kaocha.runner"]}
+  {:extra-paths ["test" "test/resources"]
+   :extra-deps {lambdaisland/deep-diff2 {:mvn/version "2.0.108"}
+                lambdaisland/kaocha {:mvn/version "1.0.861"}}
+   :main-opts ["-m" "kaocha.runner"]}
 
   :coverage
   {:extra-deps {cloverage/cloverage {:mvn/version "RELEASE"}}
