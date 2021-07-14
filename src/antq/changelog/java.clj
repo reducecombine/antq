@@ -7,6 +7,7 @@
    [antq.util.url :as u.url]
    [clojure.string :as str]))
 
+;; XXX cover
 (defmethod changelog/get-changelog-url :java
   [dep]
   (when-let [url (u.java/get-scm-url dep)]
@@ -19,7 +20,7 @@
                      first)
             clean-url (-> url u.url/ensure-https u.url/ensure-tail-slash)
             contents (if tag
-                       ;; XXX memo
+                       ;; XXXx memo
                        (slurp (str clean-url "/tree/" tag))
                        (slurp (str clean-url)))
             found? (and contents
@@ -31,7 +32,7 @@
                                                   (or tag
                                                       ;; an arbitrary word that will mever match anything:
                                                       "xxxxxxxx")
-                                                  "|master)/(changes|changelog|CHANGES|CHANGELOG)\\.(md|adoc|txt])")))
+                                                  "|master)/(changes|changelog|CHANGES|CHANGELOG)\\.(md|adoc|txt|org]])")))
             [filename] (when found?
                          (or (some-> tagged-file-ref-re
                                      (re-find contents))
